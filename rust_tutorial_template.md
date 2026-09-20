@@ -11,7 +11,7 @@
 
 | # | Name | Student ID | GitHub Username | Main Responsibility |
 |---|---|---|---|---|
-| 1 | `[ชื่อ-นามสกุล]` | `[รหัส]` | `@[username]` | Concept + Code |
+| 1 | `คมสัน กลิ่นหอม` | `670710124` | `@[670710124]` | Concept + Code |
 | 2 | `[ชื่อ-นามสกุล]` | `[รหัส]` | `@[username]` | Code + Demo |
 | 3 | `[ชื่อ-นามสกุล]` | `[รหัส]` | `@[username]` | Rust vs Other Language + PPL |
 | 4 | `[ชื่อ-นามสกุล]` | `[รหัส]` | `@[username]` | Exercises + Common Mistakes |
@@ -31,71 +31,159 @@
 
 ## 3. Introduction
 
-อธิบายว่า Topic นี้คืออะไร มีความสำคัญอย่างไร และใช้แก้ปัญหาอะไรในการเขียนโปรแกรม
+Rust เป็นภาษาที่เน้นการทำงานผ่าน **expressions** เป็นหลัก โดย expression คือส่วนของโค้ดที่สามารถถูกประเมินแล้วให้ค่า (value) หรือทำให้เกิดผลบางอย่างจากการทำงานได้ ขณะที่ **statements** มีหน้าที่หลักในการจัดวางและกำหนดลำดับการประเมิน expression ภายในโปรแกรม
 
-`[เขียนเนื้อหาที่นี่]`
+การเข้าใจความแตกต่างระหว่าง expressions และ statements จะมีผลต่อวิธีที่ Rust ใช้ประเมินค่านั้นๆ การใช้ semicolon (`;`) การกำหนดค่าของ block และการคืนค่าจาก function โดยเฉพาะใน Rust ที่ block, `if`, `match` และโครงสร้างอื่น ๆ หลายชนิดสามารถทำหน้าที่เป็น expression และให้ค่ากลับมาได้
+
+ความเข้าใจในหัวข้อนี้ช่วยให้ผู้เขียนโปรแกรมสามารถอ่านและเขียนโค้ด Rust ได้ถูกต้องมากขึ้น เช่น รู้ว่าเมื่อใดค่าของ expression จะถูกนำไปใช้ เมื่อใดค่าจะถูกละทิ้ง และเหตุใดการเพิ่มหรือลบ semicolon บางตำแหน่งจึงอาจเปลี่ยนค่าหรือชนิดข้อมูลของ block ได้]`
 
 ---
 
 ## 4. Key Concepts
 
-### 4.1 `[Concept 1]`
+### 4.1 `Expression and Value`
 
 **คำอธิบาย**
 
-`[อธิบายแนวคิด]`
+`Expression` คือส่วนของโค้ดที่เมื่อถูกประเมิน(evaluate) แล้วจะให้ค่า(value) ออกมา
+`Rust` เป็นภาษาที่เน้น Expression เป็นหลัก โดย Expression หนึ่งสามารถเป็นส่วนย่อยของ Expression ที่ใหญ่กว่าได้
 
 **ตัวอย่าง**
 
 ```rust
 fn main() {
-    println!("Hello, Rust!");
+    let x = (5 + 3) * 2;
+    println!("{}", x);
 }
 ```
 
 **Explanation**
 
-`[อธิบายว่า code ทำงานอย่างไร]`
+`(5 + 3) * 2` คือ Expressionใหญ่ `5 + 3` คือ Expressionย่อย ซึ่งเมื่อถูก evaluate แล้วจะได้ value คือ 16
+จากนั้นค่า 16 ถูกนำไปใช้เป็นค่าเริ่มต้นของตัวแปร x
 
 ---
 
-### 4.2 `[Concept 2]`
+### 4.2 `Statement`
 
-`[อธิบายแนวคิด]`
+**คำอธิบาย**
 
+Statement เป็นองค์ประกอบที่อยู่ภายใน `block` และมีหน้าที่หลักในการจัดลำดับการทำงานของโปรแกรม
+
+Rust แบ่ง Statement หลัก ๆ เป็น 2 ประเภท
+1. `Declaration Statement` — ใช้ประกาศชื่อใหม่ เช่น ตัวแปรหรือ item
+2. `Expression Statement` — ประเมิน Expression แล้วไม่ใช้ค่าผลลัพธ์ต่อ
+ตัวอย่าง
 ```rust
-// Rust code
+fn main() {
+    let x = 10;
+    println!("{}", x);
+}
 ```
+**Explanation**
+```rust
+let x = 10;
+```
+
+let statement เป็น `Declaration Statement`
+ภายใน statement นี้ 10 เป็น Expression ที่ให้ value 10 และค่านั้นถูกใช้เป็นค่าเริ่มต้นของ x
+
+### 4.3 `Expression Statement`
+
+**คำอธิบาย**
+
+Expression Statement คือการนำ Expression มาประเมิน แต่ไม่ได้ใช้ค่าผลลัพธ์ที่ Expression คืนมา
+โดยทั่วไปเราใช้ Expression Statement เมื่อต้องการผลจากการทำงาน (effect) ของ Expression มากกว่าค่าที่มันคืนมา
+
+**ตัวอย่าง**
+```rust
+fn main() {
+    let mut numbers = vec![1, 2, 3];
+
+    numbers.pop();
+
+    println!("{:?}", numbers);
+}
+```
+**Explanation**
+
+`numbers.pop()` จะนำสมาชิกตัวสุดท้ายออกจาก vector และคืนค่าของสมาชิกที่ถูกนำออก
+ในตัวอย่างนี้ เราไม่ได้เก็บค่าที่ `pop()` คืนมา ดังนั้นค่าผลลัพธ์ถูกละทิ้ง แต่ effect ของการเรียก `pop()` ยังคงเกิดขึ้น
 
 ---
 
-### 4.3 `[Concept 3]`
+### 4.4 `Block Expression and Tail Expression`
 
-`[อธิบายแนวคิด]`
+**คำอธิบาย**
+
+ใน Rust block `{ ... }` สามารถเป็น Expression และมี value ของตัวเองได้
+ถ้า Expression ตัวสุดท้ายของ block ไม่มี semicolon `(;)` ค่าของ Expression นั้นจะกลายเป็นค่าของ block เราเรียก Expression ตำแหน่งนี้ว่า **Tail Expression**
+
+
+**ตัวอย่าง**
 
 ```rust
-// Rust code
+fn main() {
+    let result = {
+        let a = 5;
+        let b = 3;
+
+        a + b
+    };
+
+    println!("{}", result);
+}
 ```
+
+ภายใน block มี Statement สองบรรทัด
+
+```rust
+let a = 5;
+let b = 3;
+```
+
+ส่วน
+
+```rust
+a + b
+```
+
+เป็น `Tail Expression` เพราะเป็น Expression ตัวสุดท้ายและไม่มี `;`
+มันให้ value `8` ดังนั้น block ทั้งก้อนจึงมี value เป็น `8` และ `result` จะมีค่าเท่ากับ `8`
 
 ---
 
-### 4.4 `[Concept 4 — ถ้ามี]`
+### 4.5 `Unit Type ()`
 
-`[อธิบายแนวคิด]`
+**คำอธิบาย**
 
-```rust
-// Rust code
-```
+ถ้า block ไม่มี Tail Expression ที่ให้ค่าข้อมูลออกมา block จะมีค่าเป็น `()` ซึ่งเรียกว่า Unit value และมี type เป็น `()`
+Unit ไม่ใช่ `null` แต่เป็นค่าที่ใช้แทนกรณีที่การทำงานเสร็จสิ้นโดยไม่มีข้อมูลที่มีความหมายให้ส่งออกมา
 
----
-
-### 4.5 `[Concept 5 — ถ้ามี]`
-
-`[อธิบายแนวคิด]`
+**ตัวอย่าง**
 
 ```rust
-// Rust code
+fn main() {
+    let result = {
+        5 + 3;
+    };
+
+    println!("{:?}", result);
+}
 ```
+`5 + 3` ยังคงถูก evaluate และได้ value `8`
+แต่เนื่องจากมี `;`
+
+```rust
+5 + 3;
+```
+มันถูกใช้เป็น Expression Statement และค่า `8` ไม่ถูกใช้เป็นค่าของ block
+ดังนั้น block นี้จึงมีค่าเป็น
+
+```rust
+()
+```
+และ result มี type เป็น '()'
 
 ---
 
@@ -103,15 +191,27 @@ fn main() {
 
 | Syntax / Rule | Meaning | Example |
 |---|---|---|
-| `[syntax/rule]` | `[ความหมาย]` | `[ตัวอย่าง]` |
-| `[syntax/rule]` | `[ความหมาย]` | `[ตัวอย่าง]` |
-| `[syntax/rule]` | `[ความหมาย]` | `[ตัวอย่าง]` |
+| `let pattern = expression;` | `ใช้ประกาศตัวแปร และใช้ค่าจาก Expression เป็นค่าเริ่มต้น` | `let x = 5 + 3;` |
+| `expression;` | `ใช้ Expression เป็น Expression Statement โดยประเมิน Expression แต่ไม่ใช้ค่าผลลัพธ์ต่อ` | `v.pop();` |
+| `{ statements; expression }` | `Block Expression ที่มี Expression สุดท้ายเป็นค่าของ block` | `{ let x = 5; x + 1 }` |
 
 ### Important Rules
 
-1. `[กฎสำคัญข้อที่ 1]`
-2. `[กฎสำคัญข้อที่ 2]`
-3. `[กฎสำคัญข้อที่ 3]`
+1. `Expression ที่ถูกใช้เป็น Expression Statement จะถูก evaluate แต่ค่าผลลัพธ์จะไม่ถูกนำไปใช้ต่อ`
+2. `ExpressionWithoutBlock เมื่อนำมาใช้เป็น Expression Statement ต้องมี semicolon (;) ปิดท้าย`
+```rust
+v.pop();   // ต้องมี ;
+5 + 3;     // ต้องมี ;
+```
+3. `ExpressionWithBlock สามารถละ semicolon (;) ได้เมื่อใช้เป็น Statement แต่ถ้าละ semicolon ผลลัพธ์ของ Expression นั้นต้องมี type เป็น Unit ()`
+```rust
+if v.is_empty() {
+    v.push(5);
+} else {
+    v.remove(0);
+}
+```
+`ตรงนี้ไม่ต้องมี ; หลัง } ก็ได้ เพราะเป็น ExpressionWithBlock และผลลัพธ์เป็น ()`
 
 ---
 
