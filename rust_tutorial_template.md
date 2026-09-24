@@ -382,29 +382,77 @@ fn main() {
 
 **Comparison Language:** `[Python / C / C++ / Java / Kotlin / ...]`
 
-| Aspect | Rust | Other Language |
+| Aspect | Rust | Python |
 |---|---|---|
-| Syntax | `[อธิบาย]` | `[อธิบาย]` |
-| Semantics / Behavior | `[อธิบาย]` | `[อธิบาย]` |
-| Type System | `[อธิบาย]` | `[อธิบาย]` |
-| Memory Management | `[อธิบาย]` | `[อธิบาย]` |
-| Safety | `[อธิบาย]` | `[อธิบาย]` |
+| Syntax | `ใช้ {} สำหรับ Block และ ; ใช้แยก Statement` | `ใช้ indentation เพื่อกำหนด Block` |
+| Semantics / Behavior | `if, loop และ Block สามารถเป็น Expression และคืนค่าได้` | `if และ loop ใช้ในลักษณะ Statement เป็นหลัก` |
+| Type System | `Static Type System` | `Dynamic Type System` |
+| Memory Management | `ใช้ Ownership และ Borrowing` | `จัดการ Memory อัตโนมัติ` |
+| Safety | `Compiler ตรวจสอบ Type และกฎ Ownership/Borrowing` | `ตรวจสอบ Type หลัก ๆ ขณะ Runtime` |
 
 ### Rust Example
 
 ```rust
-// Rust code
-```
+fn main() {
+    let score = 75;
 
-### `[Other Language]` Example
+    let grade = if score >= 80 {
+        "A"
+    } else if score >= 70 {
+        "B"
+    } else {
+        "C"
+    };
+
+    println!("{}", grade);
+}
+```
+Output:
+```rust
+B
+```
+จุดสำคัญคือ `if` สามารถเป็น Expression และคืนค่า `"B"` ให้กับตัวแปร `grade` ได้
+
+### `[Python]` Example
 
 ```python
-# Other language code
+score = 75
+
+if score >= 80:
+    grade = "A"
+elif score >= 70:
+    grade = "B"
+else:
+    grade = "C"
+
+print(grade)
 ```
+Output:
+```python
+B
+```
+ใน Python ต้องกำหนดค่าให้ `grade` ภายในแต่ละ branch ของ `if` ขณะที่ Rust สามารถใช้ `if` เป็น Expression แล้วกำหนดผลลัพธ์ให้ `grade` โดยตรง
 
 ### Analysis
 
-`[อธิบายความแตกต่างที่สำคัญ และเหตุผลด้านการออกแบบภาษา]`
+ตัวอย่างนี้แสดงความแตกต่างด้านการออกแบบภาษาอย่างชัดเจน:
+```rust
+let grade = if score >= 70 {
+    "B"
+} else {
+    "C"
+};
+```
+`if` สร้างค่าออกมา แล้วนำค่านั้นไปกำหนดให้ `grade`  
+
+Python:
+```python
+if score >= 70:
+    grade = "B"
+else:
+    grade = "C"
+```
+`if` ทำหน้าที่ควบคุมการทำงาน และการกำหนดค่าให้ `grade` เกิดขึ้นภายในแต่ละ branch แสดงให้เห็นว่า Rust มีแนวทาง Expression-oriented ที่ทำให้โครงสร้างควบคุมสามารถนำมาใช้สร้างค่าได้โดยตรง
 
 ---
 
