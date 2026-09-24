@@ -269,7 +269,25 @@ fn main() {
 
 ### 9.1 Syntax
 
-`[Topic นี้เกี่ยวข้องกับ syntax อย่างไร]`
+Rust มีแนวคิดสำคัญคือ Expression-oriented language ซึ่งโครงสร้างจำนวนมากสามารถเป็น Expression และให้ค่ากลับมาได้
+ตัวอย่าง:
+```rust
+let x = 10 + 20;
+
+let y = if x > 20 {
+    100
+} else {
+    200
+};
+```
+ในตัวอย่างนี้
+
+`10 + 20` เป็น Expression  
+`x > 20` เป็น Expression  
+`if ... else ...` เป็น Expression  
+`let x = ...;`เป็น Statement
+
+Syntax ของ Expression สามารถประกอบด้วย operator, operand, function call, block, conditional และอื่น ๆ
 
 ### 9.2 Semantics
 
