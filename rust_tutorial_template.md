@@ -171,6 +171,30 @@ fn main() {
 
 ---
 
+### 4.6 `loop` as an Expression
+
+ใน Rust `loop` ก็สามารถเป็น **Expression** และให้ value ได้เช่นกัน
+
+```rust
+fn main() {
+    let result = loop {
+        break 10;
+    };
+
+    println!("{}", result);
+}
+```
+
+ในตัวอย่างนี้ `loop` จะทำงานจนเจอ
+
+```rust
+break 10;
+```
+
+`break` จะหยุด `loop` และส่งค่า `10` ออกมาเป็น value ของ `loop` ทั้งก้อน ดังนั้น `result` จะมีค่าเป็น `10`
+
+---
+
 ## 5. Important Syntax / Rules
 
 | Syntax / Rule | Meaning | Example |
