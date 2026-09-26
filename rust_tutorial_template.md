@@ -22,112 +22,72 @@
 
 หลังจากศึกษา Topic นี้แล้ว ผู้เรียนสามารถ:
 
-1. `[อธิบายแนวคิดสำคัญได้]`
-2. `[เขียนโปรแกรม Rust ที่เกี่ยวข้องได้]`
-3. `[วิเคราะห์พฤติกรรม/กฎของภาษาได้]`
-4. `[เปรียบเทียบ Rust กับภาษาอื่นได้]`
+1. อธิบายความแตกต่างระหว่าง **Expression** และ **Statement** ใน Rust ได้
+2. อธิบายการทำงานของ **Block Expression**, **Tail Expression** และการคืนค่า (return value) จาก block/function ได้
+3. เขียนและวิเคราะห์การใช้ `if` และ `match` ในฐานะ Expression ได้
+4. เปรียบเทียบแนวคิด Expressions & Statements ของ Rust กับภาษา Python และ C ได้
 
 ---
 
 ## 3. Introduction
 
-Rust เป็นภาษาที่เน้นการทำงานผ่าน **expressions** เป็นหลัก โดย expression คือส่วนของโค้ดที่สามารถถูกประเมินแล้วให้ค่า (value) หรือทำให้เกิดผลบางอย่างจากการทำงานได้ ขณะที่ **statements** มีหน้าที่หลักในการจัดวางและกำหนดลำดับการประเมิน expression ภายในโปรแกรม
+Rust เป็นภาษาที่เน้นการทำงานผ่าน **expressions** เป็นหลัก โดย Expression คือส่วนของโค้ดที่เมื่อถูกประเมิน (evaluate) แล้วจะให้ค่า (value) และในระหว่างการประเมินอาจทำให้เกิดผลจากการทำงาน (effect) ได้ ส่วน **Statement** ใช้สำหรับประกาศสิ่งต่าง ๆ หรือจัดลำดับการประเมิน Expression ภายใน block
 
-การเข้าใจความแตกต่างระหว่าง expressions และ statements จะมีผลต่อวิธีที่ Rust ใช้ประเมินค่านั้นๆ การใช้ semicolon (`;`) การกำหนดค่าของ block และการคืนค่าจาก function โดยเฉพาะใน Rust ที่ block, `if`, `match` และโครงสร้างอื่น ๆ หลายชนิดสามารถทำหน้าที่เป็น expression และให้ค่ากลับมาได้
-
-ความเข้าใจในหัวข้อนี้ช่วยให้ผู้เขียนโปรแกรมสามารถอ่านและเขียนโค้ด Rust ได้ถูกต้องมากขึ้น เช่น รู้ว่าเมื่อใดค่าของ expression จะถูกนำไปใช้ เมื่อใดค่าจะถูกละทิ้ง และเหตุใดการเพิ่มหรือลบ semicolon บางตำแหน่งจึงอาจเปลี่ยนค่าหรือชนิดข้อมูลของ block ได้]`
+การเข้าใจ Expressions & Statements มีความสำคัญ เพราะช่วยให้เข้าใจว่าโค้ดส่วนใดสร้างค่า โค้ดส่วนใดนำค่านั้นไปใช้ต่อ และ semicolon (`;`) มีผลต่อค่าของ block อย่างไร แนวคิดนี้เชื่อมโดยตรงกับ **Block Expression**, การคืนค่าจาก function และการใช้ `if` / `match` เป็น Expression
 
 ---
 
 ## 4. Key Concepts
 
-### 4.1 `Expression and Value`
+### 4.1 Expression vs Statement
 
-**คำอธิบาย**
-
-`Expression` คือส่วนของโค้ดที่เมื่อถูกประเมิน(evaluate) แล้วจะให้ค่า(value) ออกมา
-`Rust` เป็นภาษาที่เน้น Expression เป็นหลัก โดย Expression หนึ่งสามารถเป็นส่วนย่อยของ Expression ที่ใหญ่กว่าได้
-
-**ตัวอย่าง**
+**Expression** คือส่วนของโค้ดที่ถูก evaluate แล้วให้ value
 
 ```rust
-fn main() {
-    let x = (5 + 3) * 2;
-    println!("{}", x);
-}
+5 + 3
 ```
 
-**Explanation**
+`5 + 3` เป็น Expression และให้ value เป็น `8`
 
-`(5 + 3) * 2` คือ Expressionใหญ่ `5 + 3` คือ Expressionย่อย ซึ่งเมื่อถูก evaluate แล้วจะได้ value คือ 16
-จากนั้นค่า 16 ถูกนำไปใช้เป็นค่าเริ่มต้นของตัวแปร x
+**Statement** เป็นองค์ประกอบภายใน block ที่ใช้ประกาศสิ่งต่าง ๆ หรือจัดลำดับการทำงาน
+
+```rust
+let x = 5 + 3;
+```
+
+ในบรรทัดนี้:
+
+```text
+let x = 5 + 3;  → Statement
+        5 + 3   → Expression
+          8     → Value
+```
+
+Rust มี Statement หลัก ๆ 2 กลุ่ม:
+
+- **Declaration Statement** เช่น `let x = 10;`
+- **Expression Statement** เช่น `v.pop();` ซึ่ง evaluate Expression แต่ไม่ใช้ค่าผลลัพธ์ต่อ
+
+ตัวอย่าง Expression Statement:
+
+```rust
+let mut v = vec![1, 2, 3];
+v.pop();
+```
+
+`v.pop()` นำสมาชิกตัวท้ายออกจาก vector และคืนค่ากลับมา แต่ในตัวอย่างนี้ค่าที่คืนมาจะไม่ถูกนำไปใช้ต่อ
 
 ---
 
-### 4.2 `Statement`
-
-**คำอธิบาย**
-
-Statement เป็นองค์ประกอบที่อยู่ภายใน `block` และมีหน้าที่หลักในการจัดลำดับการทำงานของโปรแกรม
-
-Rust แบ่ง Statement หลัก ๆ เป็น 2 ประเภท
-1. `Declaration Statement` — ใช้ประกาศชื่อใหม่ เช่น ตัวแปรหรือ item
-2. `Expression Statement` — ประเมิน Expression แล้วไม่ใช้ค่าผลลัพธ์ต่อ
-ตัวอย่าง
-```rust
-fn main() {
-    let x = 10;
-    println!("{}", x);
-}
-```
-**Explanation**
-```rust
-let x = 10;
-```
-
-let statement เป็น `Declaration Statement`
-ภายใน statement นี้ 10 เป็น Expression ที่ให้ value 10 และค่านั้นถูกใช้เป็นค่าเริ่มต้นของ x
-
-### 4.3 `Expression Statement`
-
-**คำอธิบาย**
-
-Expression Statement คือการนำ Expression มาประเมิน แต่ไม่ได้ใช้ค่าผลลัพธ์ที่ Expression คืนมา
-โดยทั่วไปเราใช้ Expression Statement เมื่อต้องการผลจากการทำงาน (effect) ของ Expression มากกว่าค่าที่มันคืนมา
-
-**ตัวอย่าง**
-```rust
-fn main() {
-    let mut numbers = vec![1, 2, 3];
-
-    numbers.pop();
-
-    println!("{:?}", numbers);
-}
-```
-**Explanation**
-
-`numbers.pop()` จะนำสมาชิกตัวสุดท้ายออกจาก vector และคืนค่าของสมาชิกที่ถูกนำออก
-ในตัวอย่างนี้ เราไม่ได้เก็บค่าที่ `pop()` คืนมา ดังนั้นค่าผลลัพธ์ถูกละทิ้ง แต่ effect ของการเรียก `pop()` ยังคงเกิดขึ้น
-
----
-
-### 4.4 `Block Expression and Tail Expression`
-
-**คำอธิบาย**
+### 4.2 Block Expression
 
 ใน Rust block `{ ... }` สามารถเป็น Expression และมี value ของตัวเองได้
-ถ้า Expression ตัวสุดท้ายของ block ไม่มี semicolon `(;)` ค่าของ Expression นั้นจะกลายเป็นค่าของ block เราเรียก Expression ตำแหน่งนี้ว่า **Tail Expression**
-
-
-**ตัวอย่าง**
 
 ```rust
 fn main() {
     let result = {
         let a = 5;
         let b = 3;
-
         a + b
     };
 
@@ -135,55 +95,79 @@ fn main() {
 }
 ```
 
-ภายใน block มี Statement สองบรรทัด
-
-```rust
-let a = 5;
-let b = 3;
-```
-
-ส่วน
-
-```rust
-a + b
-```
-
-เป็น `Tail Expression` เพราะเป็น Expression ตัวสุดท้ายและไม่มี `;`
-มันให้ value `8` ดังนั้น block ทั้งก้อนจึงมี value เป็น `8` และ `result` จะมีค่าเท่ากับ `8`
+`a + b` เป็น Expression สุดท้ายของ block และไม่มี `;` จึงทำให้ block มี value เป็น `8`
 
 ---
 
-### 4.5 `Unit Type ()`
+### 4.3 Tail Expression and Return Value
 
-**คำอธิบาย**
+Expression สุดท้ายของ block ที่ไม่มี semicolon (`;`) เรียกว่า **Tail Expression** และค่าของมันจะกลายเป็นค่าของ block
 
-ถ้า block ไม่มี Tail Expression ที่ให้ค่าข้อมูลออกมา block จะมีค่าเป็น `()` ซึ่งเรียกว่า Unit value และมี type เป็น `()`
-Unit ไม่ใช่ `null` แต่เป็นค่าที่ใช้แทนกรณีที่การทำงานเสร็จสิ้นโดยไม่มีข้อมูลที่มีความหมายให้ส่งออกมา
+```rust
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+```
 
-**ตัวอย่าง**
+`a + b` เป็น Tail Expression ดังนั้นค่าที่ได้จะถูกใช้เป็น return value ของ function โดยไม่จำเป็นต้องเขียน `return`
+
+ถ้าเขียน:
+
+```rust
+let x = {
+    5 + 3;
+};
+```
+
+`5 + 3;` ถูกใช้เป็น Expression Statement ค่าที่ได้จะไม่ถูกใช้เป็นค่าของ block และเมื่อ block จบการทำงานตามปกติโดยไม่มี Tail Expression block จะมีค่าเป็น Unit `()`
+
+---
+
+### 4.4 `if` as an Expression
+
+ใน Rust `if` สามารถเป็น Expression และให้ value ได้
 
 ```rust
 fn main() {
-    let result = {
-        5 + 3;
+    let score = 75;
+
+    let grade = if score >= 80 {
+        "A"
+    } else if score >= 70 {
+        "B"
+    } else {
+        "C"
     };
 
-    println!("{:?}", result);
+    println!("{}", grade);
 }
 ```
-`5 + 3` ยังคงถูก evaluate และได้ value `8`
-แต่เนื่องจากมี `;`
+
+เมื่อ `score = 75` ค่า Expression ของ `if` คือ `"B"` และค่านี้ถูกนำไปกำหนดให้ `grade`
+
+เมื่อใช้ `if` เพื่อสร้างค่า แต่ละ branch ต้องให้ค่าที่มีชนิดข้อมูลเข้ากันได้
+
+---
+
+### 4.5 `match` as an Expression
+
+`match` สามารถเป็น Expression และให้ value จาก arm ที่ match ได้
 
 ```rust
-5 + 3;
-```
-มันถูกใช้เป็น Expression Statement และค่า `8` ไม่ถูกใช้เป็นค่าของ block
-ดังนั้น block นี้จึงมีค่าเป็น
+fn main() {
+    let number = 2;
 
-```rust
-()
+    let text = match number {
+        1 => "One",
+        2 => "Two",
+        _ => "Other",
+    };
+
+    println!("{}", text);
+}
 ```
-และ result มี type เป็น '()'
+
+เมื่อ `number = 2` arm ที่ตรงคือ `2 => "Two"` ดังนั้น `match` ทั้งก้อนมี value เป็น `"Two"`
 
 ---
 
@@ -191,30 +175,21 @@ fn main() {
 
 | Syntax / Rule | Meaning | Example |
 |---|---|---|
-| `let pattern = expression;` | `ใช้ประกาศตัวแปร และใช้ค่าจาก Expression เป็นค่าเริ่มต้น` | `let x = 5 + 3;` |
-| `expression;` | `ใช้ Expression เป็น Expression Statement โดยประเมิน Expression แต่ไม่ใช้ค่าผลลัพธ์ต่อ` | `v.pop();` |
-| `{ statements; expression }` | `Block Expression ที่มี Expression สุดท้ายเป็นค่าของ block` | `{ let x = 5; x + 1 }` |
+| `let pattern = expression;` | ประกาศตัวแปร และใช้ค่าจาก Expression เป็นค่าเริ่มต้น | `let x = 5 + 3;` |
+| `expression;` | ใช้ Expression เป็น Expression Statement และไม่ใช้ค่าผลลัพธ์ต่อ | `v.pop();` |
+| `{ ... final_expression }` | Block Expression ที่ใช้ค่าจาก Expression สุดท้ายเป็นค่าของ block | `{ let x = 5; x + 1 }` |
+| `if ... { expr } else { expr }` | `if` สามารถสร้าง value ได้ | `let x = if c { 1 } else { 0 };` |
+| `match value { ... }` | `match` สามารถสร้าง value จาก arm ที่ตรงได้ | `let x = match n { 1 => "A", _ => "B" };` |
 
 ### Important Rules
 
-1. `Expression ที่ถูกใช้เป็น Expression Statement จะถูก evaluate แต่ค่าผลลัพธ์จะไม่ถูกนำไปใช้ต่อ`
-2. `ExpressionWithoutBlock เมื่อนำมาใช้เป็น Expression Statement ต้องมี semicolon (;) ปิดท้าย`
-```rust
-v.pop();   // ต้องมี ;
-5 + 3;     // ต้องมี ;
-```
-3. `ExpressionWithBlock สามารถละ semicolon (;) ได้เมื่อใช้เป็น Statement แต่ถ้าละ semicolon ผลลัพธ์ของ Expression นั้นต้องมี type เป็น Unit ()`
-```rust
-if v.is_empty() {
-    v.push(5);
-} else {
-    v.remove(0);
-}
-```
-`ตรงนี้ไม่ต้องมี ; หลัง } ก็ได้ เพราะเป็น ExpressionWithBlock และผลลัพธ์เป็น ()`
+1. Expression Statement จะ evaluate Expression แต่ไม่ใช้ค่าผลลัพธ์ต่อ
+2. Expression สุดท้ายของ block ที่ไม่มี `;` จะเป็น Tail Expression และค่าของมันจะกลายเป็นค่าของ block
+3. ถ้า block ไม่มี Tail Expression และจบการทำงานตามปกติ block จะมีค่าเป็น `()`
+4. `if` ที่ใช้เป็น Expression ต้องให้ค่าจากแต่ละ branch ที่มี type เข้ากันได้
+5. `match` ที่ใช้เป็น Expression จะให้ value จาก arm ที่ถูกเลือก
 
 ---
-
 ## 6. Runnable Code Examples
 
 > **ข้อกำหนด:** Code ทุกตัวต้อง Compile และ Run ได้จริงก่อนนำมาใส่ในเอกสาร
