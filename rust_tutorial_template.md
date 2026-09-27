@@ -262,42 +262,49 @@ Total calculated grade: A
 
 ---
 
-### Example 2 — `การคืนค่าจาก Loop ด้วยคำสั่ง break`
+### Example 2 — `การคืนค่าด้วย match Expression และคำสั่ง return`
 
-**Purpose:** `สาธิตการใช้ loop ในฐานะ Expression ที่สามารถประมวลผลการทำงานซ้ำ และคืนค่าผลลัพธ์กลับมาเข้าตัวแปรได้ทันทีผ่านคำสั่ง break value;`
+**Purpose:** `สาธิตการใช้ match ในฐานะ Expression เพื่อประเมินค่าผลลัพธ์ (Value) รวมถึงการใช้คำสั่ง return สำหรับการออกจากฟังก์ชันล่วงหน้า (Early Return) เมื่อเจอเงื่อนไขขอบเขต`
 
 ```rust
+fn check_user_role(level: u32) -> &'static str {
+    // Early Return: ใช้คำสั่ง return เพื่อคืนค่าและออกจากฟังก์ชันทันที
+    if level == 0 {
+        return "Guest";
+    }
+
+    // match ในฐานะ Expression: คืนค่า String slice ออกจากฟังก์ชันโดยไม่ต้องใช้คำสั่ง return
+    match level {
+        1 => "Member",
+        2 => "Moderator",
+        3 => "Admin",
+        _ => "Unknown Role",
+    }
+}
+
 fn main() {
-    let mut counter = 0;
+    let user_level = 2;
+    let role = check_user_role(user_level);
 
-    // loop เป็น Expression ที่ส่งค่ากลับมาเข้าตัวแปร result ได้โดยตรง
-    let result = loop {
-        counter += 1;
-
-        if counter == 3 {
-            // คืนค่า counter * 10 ออกไปให้ตัวแปร result แล้วหยุด loop ทันที
-            break counter * 10;
-        }
-    };
-
-    println!("The result from loop execution is: {}", result);
+    println!("User role is: {}", role);
 }
 ```
 
 **Expected Output**
 
 ```text
-The result from loop execution is: 30
+User role is: Moderator
 ```
 
 **Explanation**
 ```
-1. ในภาษา Rust โครงสร้างควบคุมอย่าง loop ถือเป็น Expression ไม่ใช่แค่ Statement เหมือนภาษา C หรือ Java   
-2. การใส่ค่าไว้หลังคำสั่ง break (เช่น break counter * 10;) เป็นการส่งผลลัพธ์ออกจาก Loop มายังตัวแปรที่รับค่าทันที   
-3. ช่วยให้เขียนโค้ดกระชับขึ้น เพราะตัวแปร result จะได้รับค่าประมวลผลทันที โดยไม่ต้องสร้างตัวแปร mut เปล่าๆ ไว้นอก Loop ก่อน   
+1. คำสั่ง return (Explicit Return): บรรทัด return "Guest"; ใช้สำหรับหยุดการทำงานและส่งค่าออกจากฟังก์ชันทันทีก่อนจะไปถึงโค้ดส่วนอื่น (Early Return)  
+2. match ในฐานะ Expression: โครงสร้าง match ทำหน้าที่ประเมินค่าและส่งผลลัพธ์จาก Arm ที่จับคู่สำเร็จออกมาเป็น Value เพื่อคืนค่าออกจากฟังก์ชันโดยตรง 
+3. การละเว้น Semicolon ;: ท้ายโครงสร้าง match ไม่มีการใส่ ; เพื่อให้ผลลัพธ์ประเมินค่าเป็น Expression สำหรับคืนค่าให้ฟังก์ชัน check_user_role   
 ```
 
 ---
+
 
 ## 7. Common Mistakes
 
